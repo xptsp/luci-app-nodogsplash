@@ -23,7 +23,7 @@ status.rmempty = false
 status.readonly = true
 
 function status.cfgvalue()
-	return luci.sys.exec("ndsctl status")
+	return luci.sys.exec("ndsctl status 2>&1")
 end
 
 -- General
