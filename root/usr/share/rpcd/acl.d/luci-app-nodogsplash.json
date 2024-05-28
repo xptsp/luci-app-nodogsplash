@@ -1,0 +1,24 @@
+{
+	"luci-app-nodogsplash": {
+		"description": "Grant permissions for the AdGuard Home LuCI app",
+		"read": {
+			"uci": [
+				"nodogsplash"
+			],
+			"file": {
+				"/usr/bin/ndsctl": [
+					"stat",
+					"exec"
+				],
+				"/usr/bin/ndsctl status": [
+					"exec"
+				]
+			}
+		},
+		"write": {
+			"uci": [
+				"nodogsplash"
+			]
+		}
+	}
+}
