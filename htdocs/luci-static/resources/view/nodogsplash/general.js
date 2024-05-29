@@ -24,7 +24,7 @@ return view.extend({
 		o.rmempty = false;
 		o.optional = false;
 
-		o = s.option(form.Value, 'gatewayinterface', _('Interface Name'));
+		o = s.option(form.ListValue, 'gatewayinterface', _('Interface Name'));
 		o.default = netDevs[0].getName();
 		for (var i = 0; i < netDevs.length; i++) {
 			t = netDevs[i].getName();
