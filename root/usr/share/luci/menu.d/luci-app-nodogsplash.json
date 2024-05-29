@@ -46,7 +46,7 @@
         }
     },
     "admin/services/nodogsplash/advanced": {
-        "title": "MAC Filter",
+        "title": "Advanced",
         "order": 41,
         "action": {
             "type": "view",
