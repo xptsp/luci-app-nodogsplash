@@ -42,10 +42,10 @@ return view.extend({
 		o.value("2", _("Level 2: Level 1 + LOG_INFO"))
 		o.value("3", _("Level 3: Level 2 + LOG_DEBUG"))
 		o.rmempty = false;
-		
+
 		s = m.section(form.TypedSection, 'nodogsplash', _("Forwarding Authentication Service") + " (FAS)");
 		s.anonymous = true;
-		
+
 		o = s.option(form.Value, "fasremoteip ", _("FAS Remote IP Address"))
 		o.optional = true
 

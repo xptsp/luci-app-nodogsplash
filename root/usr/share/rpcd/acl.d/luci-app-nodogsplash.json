@@ -37,7 +37,7 @@
 				"/usr/bin/ndsctl untrust *": [
 					"exec"
 				],
-				"/usr/bin/ndsctl json mac": [
+				"/usr/bin/ndsctl json": [
 					"exec"
 				]
 			}
