@@ -28,11 +28,11 @@ return view.extend({
 		o.placeholder = "250"
 		o.datatype = "integer"
 
-		o = s.option(form.Value, "preauth", _("Dynamic Web Page served by NDS"), _("The shell script will be invoked for authentication. <br/> If you need to use it, please refer to Wiki to create scripts"))
+		o = s.option(form.Value, "preauth", _("Dynamic Web Page served by NDS"), _("The shell script will be invoked for authentication. <br/> Refer here for more information:") + " <a href=\"https://nodogsplash.readthedocs.io/en/latest/customize.html#the-splash-page\" target=\"blank\">NoDogSplash Wiki: The Splash Page</a>")
 		o.placeholder = "/usr/lib/nodogsplash/login.sh"
 		o.optional = true
 
-		o = s.option(form.Value, "binauth", _("Shell Script Path"), _("The shell script will be invoked for authentication. <br/> If you need to use it, please refer to Wiki to create scripts"))
+		o = s.option(form.Value, "binauth", _("Shell Script Path"), _("The shell script will be invoked for authentication. <br/> Refer here for more information:") + " <a href=\"https://nodogsplash.readthedocs.io/en/latest/binauth.html\" target=\"blank\">NoDogSplash Wiki: BinAuth Option</a>")
 		o.placeholder = "/bin/myauth.sh"
 		o.optional = true
 
