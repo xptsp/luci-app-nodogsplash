@@ -11,7 +11,6 @@ return view.extend({
 	allow_list: [],
 	block_list: [],
 	trust_list: [],
-	ndsctl_clients: [],
 
 	load: function () {
 		return Promise.all([
@@ -24,28 +23,20 @@ return view.extend({
 		});
 	},
 
-	render_client: function(mac, trusted, allowed, blocked, client = [], can_remove = true) {
+	render_client: function(mac, trusted, allowed, blocked, client = []) {
 		return E('tr', { 'class': 'tr' }, [
 			E('td', { 'class': 'td left', 'style': 'width: 50%;' }, [
 				E('span', { style: 'font-size:medium;' }, mac),
 				E('span', {}, client.ip != null ? ' (' + client.ip + ')' : ''),
-				E('ul', { style: "margin-left: 20px" }, client.state != null ? [
+				E('ul', { style: "margin-left: 20px" }, [
 					E('li', { style: "list-style-type: circle;" }, [
-						E('span', { style: "font-weight: bold;" }, _("Client Status") + ": "),
-						E('span', {}, client.state)
+						E('span', { style: "font-weight:bold;" }, _("Client Status") + ": "),
+						E('span', {}, client.state != null ? _(client.state) : _('Disconnected'))
 					]),
-					E('li', { style: "list-style-type: circle;" }, [
-						E('span', { style: "font-weight: bold;" }, _("Active Since") + ": "),
+					client.state != null ? E('li', { style: "list-style-type: circle;" }, [
+						E('span', { style: "font-weight:bold;" }, _("Active Since") + ": "),
 						E('span', {}, new Date(client.active * 1000)),
-					]),
-					E('li', { style: "list-style-type: circle;" }, [
-						E('span', { style: "font-weight: bold;" }, _("Downloaded") + ": "),
-						E('span', {}, client.downloaded),
-					]),
-					E('li', { style: "list-style-type: circle;" }, [
-						E('span', { style: "font-weight: bold;" }, _("Uploaded") + ": "),
-						E('span', {}, client.uploaded),
-					]) ] : [ E('span', {})
+					]) : E('span', {})
 				]),
 			]),
 			E('td', { 'class': 'diag-action', 'style': 'width: 50%; vertical-align: top;' }, [
@@ -61,21 +52,17 @@ return view.extend({
 					'class': 'cbi-button cbi-button-action' + (!this.block_mechanism ? ' hidden' : ''),
 					'click': ui.createHandlerFn(this, !allowed ? 'Allow_MAC' : 'Unallow_MAC')
 				}, [ !allowed ? _('Allow MAC')  : _("UnAllow MAC")]),
-				can_remove ? E('button', {
-					'class': 'cbi-button cbi-button-action',
-					'click': ui.createHandlerFn(this, 'Remove_MAC')
-				}, [ _('Remove MAC') ]) : E('span', {}),
 			])
 		]);
 	},
 
-	render_list: function(table, list, can_remove = true) {
+	render_list: function(table, list) {
 		var mac, i, client;
 		for (let i in list) {
 			// Render the client data:
 			client = list[i];
 			mac = client.mac != null ? client.mac : client;
-			table.appendChild( this.render_client( mac.toLowerCase(), this.trust_list.includes(mac), this.allow_list.includes(mac), this.block_list.includes(mac), client, can_remove ) );
+			table.appendChild( this.render_client( mac.toLowerCase(), this.trust_list.includes(mac), this.allow_list.includes(mac), this.block_list.includes(mac), client ) );
 
 			// Remove the client from each of the mac lists:
 			this.trust_list = this.trust_list.filter( check => check != mac );
@@ -85,27 +72,51 @@ return view.extend({
 		return table;
 	},
 
+	lowercase_list: function(table) {
+		for (var i=0; i < table.length; i++)
+			table[i] = table[i].toLowerCase();
+		return table;
+	},
+
 	render: function(data) {
-		var mac, client;
+		var m, s, o;
 		var sections = uci.sections('nodogsplash');
-		this.allow_list = sections[0].allowedmac != null ? sections[0].allowedmac : [];
-		this.block_list = sections[0].blockedmac != null ? sections[0].blockedmac : [];
-		this.trust_list = sections[0].trustedmac != null ? sections[0].trustedmac : [];
+		this.allow_list = this.lowercase_list( sections[0].allowedmac != null ? sections[0].allowedmac : [] );
+		this.block_list = this.lowercase_list( sections[0].blockedmac != null ? sections[0].blockedmac : [] );
+		this.trust_list = this.lowercase_list( sections[0].trustedmac != null ? sections[0].trustedmac : [] );
 		this.block_mechanism = sections[0].macmechanism == 'block';
 
-		// Process the current clients first:
+		// Process the current clients first, creating table for use later:
 		var table = E('table', { 'class': 'table' });
 		data = JSON.parse(data);
-		this.render_list( table, data.clients, false );
+		this.render_list( table, data.clients );
 
 		// Process the trusted, allowed and blocked MAC address lists:
 		this.render_list( table, this.trust_list );
 		this.render_list( table, this.allow_list );
 		this.render_list( table, this.block_list );
 
-		// Return the entire table:
-		return E('div', { 'class': 'left' }, [
-			E('h3', _('Client List')), table
-		]);
+		// Actually render the page:
+		m = new form.Map('nodogsplash');
+		s = m.section(form.TypedSection, 'nodogsplash', _('MAC Mechanism'));
+		s.anonymous = true;
+		
+		o = s.option(form.ListValue, 'macmechanism', _("MAC Access Mechanism"), _("MAC addresses that are / are not allowed to access the splash page"));
+		o.value('block', _("Block MACs"));
+		o.value('allow', _("Allow MACs"));
+		o.default = 'block';
+		o.rmempty = false;
+		o.editable = false;
+		
+		s = m.section(form.TypedSection, 'nodogsplash', _('Clients'));
+		s.anonymous = true;
+		var ClientTable = form.DummyValue.extend({
+			renderWidget: function(section_id, option_index, cfgvalue) {
+				return table;
+			}
+		});
+		o = s.option(ClientTable);
+		
+		return m.render();
 	}
 });
