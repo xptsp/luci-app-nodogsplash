@@ -61,7 +61,7 @@ return view.extend({
 	
 	render_status: function(lines) {
 		return E('div', { 'class': 'left' }, [
-			E('h3', _('NoDogSplash Status')), this.render_table(lines, 3)
+			E('h2', _('NoDogSplash Status')), this.render_table(lines, 3)
 		]);
 	},
 	

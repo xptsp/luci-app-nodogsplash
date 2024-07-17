@@ -162,8 +162,8 @@ return view.extend({
 		this.render_list( table, this.block_list );
 
 		// Actually render the page:
-		m = new form.Map('nodogsplash');
-		s = m.section(form.TypedSection, 'nodogsplash', _('MAC Mechanism'));
+		m = new form.Map('nodogsplash', _('MAC Mechanism'));
+		s = m.section(form.TypedSection, 'nodogsplash');
 		s.anonymous = true;
 
 		o = s.option(form.ListValue, 'macmechanism', _("MAC Access Mechanism"), _("MAC addresses that are / are not allowed to access the splash page"));
