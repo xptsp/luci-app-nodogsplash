@@ -10,7 +10,8 @@ LUCI_DEPENDS:=+nodogsplash +luci-base
 LUCI_PKGARCH:=all
 PKG_NAME:=luci-app-nodogsplash
 PKG_VERSION:=2.0.1
-PKG_RELEASE:=1
+PKG_RELEASE:=2
+PKG_MAINTAINER:=Douglas Orend <doug.orend2@gmail.com>
 
 include $(TOPDIR)/feeds/luci/luci.mk
 
